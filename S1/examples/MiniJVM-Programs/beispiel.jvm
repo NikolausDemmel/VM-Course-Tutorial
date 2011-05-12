@@ -1,0 +1,7 @@
+CONST 17 
+CONST 4 
+ADD     
+CONST 2 
+MUL     
+WRITE   
+HALT

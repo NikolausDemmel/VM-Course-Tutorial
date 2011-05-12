@@ -1,0 +1,10 @@
+% bigger1.wim : ?-is_bigger(elephant, monkey).
+% bigger2.wim : ?-is_bigger(elephant, X).
+% bigger3.wim : ?-is_bigger(X,Y).
+
+bigger(X,Y) :- X = elephant, Y = horse.
+bigger(X,Y) :- X = horse, Y = donkey.
+bigger(X,Y) :- X = donkey, Y = dog.
+bigger(X,Y) :- X = donkey, Y = monkey.
+is_bigger(X,Y) :- bigger(X,Y).
+is_bigger(X,Y) :- bigger(X,Z), is_bigger(Z,Y).

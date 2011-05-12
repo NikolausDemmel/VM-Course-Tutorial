@@ -1,0 +1,117 @@
+	JUMP _L1
+	NO
+_L1:
+	ENTRY istLuegner/2 R _L13
+	ENTRY istLuegner/2 Default _L14
+	ENTRY istLuegner/2 luegt _L12
+	ENTRY istLuegner/2 wahr _L11
+	ENTRY beideLuegen/3 R _L8
+	ENTRY beideLuegen/3 Default _L10
+	ENTRY beideLuegen/3 luegt _L9
+	ENTRY beideLuegen/3 wahr _L4
+	INIT
+	PUSHENV 3
+	MARK _L15
+	PUTVAR 1
+	PUTVAR 2
+	PUTVAR 3
+	CALL findeLuegner/3
+_L15:
+	HALT 3
+istLuegner/2:
+	PUTREF 1
+	GETNODE
+	INDEX istLuegner/2
+_L13:
+	SETBTP
+	TRY _L11
+	DELBTP
+	JUMP _L12
+_L14:
+	FAIL
+_L11:
+	PUSHENV 2
+	PUTREF 1
+	UATOM wahr
+	PUTREF 2
+	UATOM luegt
+	POPENV
+_L12:
+	PUSHENV 2
+	PUTREF 1
+	UATOM luegt
+	PUTREF 2
+	UATOM wahr
+	POPENV
+beideLuegen/3:
+	PUTREF 1
+	GETNODE
+	INDEX beideLuegen/3
+_L8:
+	SETBTP
+	TRY _L4
+	TRY _L5
+	TRY _L6
+	DELBTP
+	JUMP _L7
+_L10:
+	FAIL
+_L9:
+	SETBTP
+	TRY _L5
+	TRY _L6
+	DELBTP
+	JUMP _L7
+_L4:
+	PUSHENV 3
+	PUTREF 1
+	UATOM wahr
+	PUTREF 2
+	UATOM luegt
+	PUTREF 3
+	UATOM luegt
+	POPENV
+_L5:
+	PUSHENV 3
+	PUTREF 1
+	UATOM luegt
+	PUTREF 2
+	UATOM luegt
+	PUTREF 3
+	UATOM wahr
+	POPENV
+_L6:
+	PUSHENV 3
+	PUTREF 1
+	UATOM luegt
+	PUTREF 2
+	UATOM wahr
+	PUTREF 3
+	UATOM luegt
+	POPENV
+_L7:
+	PUSHENV 3
+	PUTREF 1
+	UATOM luegt
+	PUTREF 2
+	UATOM wahr
+	PUTREF 3
+	UATOM wahr
+	POPENV
+findeLuegner/3:
+	PUSHENV 3
+	MARK _L2
+	PUTREF 1
+	PUTREF 2
+	CALL istLuegner/2
+_L2:
+	MARK _L3
+	PUTREF 2
+	PUTREF 3
+	CALL istLuegner/2
+_L3:
+	LASTMARK
+	PUTREF 3
+	PUTREF 1
+	PUTREF 2
+	LASTCALL beideLuegen/3 3

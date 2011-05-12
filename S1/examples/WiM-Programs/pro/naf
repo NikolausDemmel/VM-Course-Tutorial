@@ -1,0 +1,7 @@
+% naf.wim : ?-n(a,c).
+
+e(X,Y) :- X=a, Y=b.
+e(X,Y) :- X=b, Y=c.
+
+n(X,Y) :- e(X,Y), !, fail.
+n(X,Y).

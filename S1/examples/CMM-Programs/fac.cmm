@@ -1,0 +1,39 @@
+				ENTER 6
+				ALLOC 1
+        LOADC 1
+				MARK
+				LOADC _main
+				CALL
+				SLIDE 1
+				HALT
+		_main:		ENTER 5
+				ALLOC 0
+				LOADC 4
+				MARK
+				LOADC _fac
+				CALL
+                                SLIDE 0
+				STORER -3
+				RETURN
+		_fac:		ENTER 6
+				ALLOC 0
+				LOADR -3
+				LOADC 0
+				LEQ       
+				JUMPZ _a
+				LOADC 1
+				STORER -3
+				RETURN
+				JUMP _b
+	_a:			LOADR -3
+				LOADR -3
+				LOADC 1
+				SUB
+				MARK
+				LOADC _fac
+				CALL 
+                                SLIDE 0
+				MUL
+				STORER -3
+				RETURN
+	_b:			RETURN

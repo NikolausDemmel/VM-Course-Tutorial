@@ -1,0 +1,21 @@
+        ALLOC 2 
+        READ 
+        STORE 0
+        CONST 1
+        STORE 1
+_A:     CONST 1 
+        LOAD 0 
+        LESS 
+        FJUMP _B
+        LOAD 1
+        LOAD 0
+        MUL
+        STORE 1
+        LOAD 0
+        CONST 1 
+        SUB
+        STORE 0
+        JUMP _A 
+_B:     LOAD 1
+        WRITE
+        HALT

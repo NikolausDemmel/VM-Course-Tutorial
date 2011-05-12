@@ -1,0 +1,7 @@
+% app1.wim : ?- app([a|[X|[]]], [c|[d|[]]], Y).
+% app2.wim : ?- app([a,b],[X], [_,Y,c]). 
+% app3.wim (mit indexing) : ?- app([a,b],[X], [_,Y,c]). 
+% app4.wim (mit indexing) : ?- app([a|[b|[]]], [X|[]], [Y|[Z|[c|[]]]]).
+
+app(X,Y,Z) :- X = [], Y = Z.
+app(X,Y,Z) :- X = [H|X1], Z = [H|Z1], app(X1, Y, Z1).

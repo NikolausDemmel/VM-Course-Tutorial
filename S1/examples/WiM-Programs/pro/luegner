@@ -1,0 +1,10 @@
+% luegner.wim : ?- findeLuegner(Peter,Thomas,Frank).
+istLuegner(X,Y) :- X=wahr, Y=luegt.
+istLuegner(X,Y) :- X=luegt, Y=wahr.
+
+beideLuegen(X,Y,Z) :- X=wahr, Y=luegt, Z=luegt.
+beideLuegen(X,Y,Z) :- X=luegt, Y=luegt, Z=wahr.
+beideLuegen(X,Y,Z) :- X=luegt, Y=wahr, Z=luegt.
+beideLuegen(X,Y,Z) :- X=luegt, Y=wahr, Z=wahr.
+
+findeLuegner(P,T,F) :- istLuegner(P,T), istLuegner(T,F), beideLuegen(F,P,T).

@@ -1,0 +1,45 @@
+    ALLOC 5
+    READ
+    STORE 0
+    CONST 0
+    STORE 1
+    CONST 1
+    STORE 2
+    CONST 0
+    STORE 3
+    CONST 0
+    STORE 4
+
+_A: LOAD 3
+    LOAD 0
+    LEQ 
+    FJUMP _B
+
+    LOAD 3
+    CONST 1
+    LEQ
+    FJUMP _C
+
+    LOAD 3
+    STORE 4
+    JUMP _D
+
+_C: LOAD 2
+    LOAD 1
+    ADD
+    STORE 4
+    LOAD 2
+    STORE 1
+    LOAD 4
+    STORE 2
+
+_D: LOAD 3
+    CONST 1
+    ADD
+    STORE 3
+
+    JUMP _A    
+
+_B: LOAD 4
+    WRITE
+    HALT

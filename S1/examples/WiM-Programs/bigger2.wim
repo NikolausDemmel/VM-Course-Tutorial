@@ -1,0 +1,70 @@
+	JUMP _START
+	NO
+_START:
+	INIT
+	PUSHENV 1
+	MARK _B
+	PUTATOM elephant
+	PUTVAR 1
+	CALL _is_bigger/2
+_B:
+	HALT 1
+_bigger/2:
+	SETBTP
+	TRY _A1
+	TRY _A2
+	TRY _A3
+	DELBTP
+	JUMP _A4
+_A1:
+	PUSHENV 2
+	PUTREF 1
+	UATOM elephant
+	PUTREF 2
+	UATOM horse
+	POPENV
+_A2:
+	PUSHENV 2
+	PUTREF 1
+	UATOM horse
+	PUTREF 2
+	UATOM donkey
+	POPENV
+_A3:
+	PUSHENV 2
+	PUTREF 1
+	UATOM donkey
+	PUTREF 2
+	UATOM dog
+	POPENV
+_A4:
+	PUSHENV 2
+	PUTREF 1
+	UATOM donkey
+	PUTREF 2
+	UATOM monkey
+	POPENV
+_is_bigger/2:
+	SETBTP
+	TRY _C1
+	DELBTP
+	JUMP _C2
+_C1:
+	PUSHENV 2
+	MARK _D
+	PUTREF 1
+	PUTREF 2
+	CALL _bigger/2
+_D:
+	POPENV
+_C2:
+	PUSHENV 3
+	MARK _E
+	PUTREF 1
+	PUTVAR 3
+	CALL _bigger/2
+_E:
+	LASTMARK
+	PUTREF 3
+	PUTREF 2
+	LASTCALL _is_bigger/2 3
