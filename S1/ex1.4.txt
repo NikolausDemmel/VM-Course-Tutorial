@@ -1,0 +1,6 @@
+code-r (e1 || e2) p =     code-r e1 p
+                          DUP
+                          JUMPZ _a
+                          JUMP _b
+                      _a: code-r e2 p
+                      _b: 

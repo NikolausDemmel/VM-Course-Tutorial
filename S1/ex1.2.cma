@@ -1,0 +1,62 @@
+// Allowed commands: loadc, load, jumpz, jump, store, pop, dup, add, sub, halt
+
+// Variable placements
+// n: 0
+// i: 1
+// a1: 2
+// a2: 3
+
+       LOADC 10    // INPUT n 
+       LOADC 0
+       LOADC 0
+       LOADC 1
+
+_loop: LOADC 1     // load i
+       LOAD
+
+       DUP         // duplicate for later increment
+
+       LOADC 0     // load n
+       LOAD
+
+       LE
+       JUMPZ _end
+
+       LOADC 1     // increment counter
+       ADD
+       LOADC 1     // store in i
+       STORE
+       POP
+
+       LOADC 3     // load a2
+       LOAD
+
+       DUP         // duplicate so we can later save it in a1
+
+       LOADC 2     // load a1
+       LOAD
+
+       ADD
+
+       LOADC 3     // store in a2
+       STORE
+       POP
+
+       LOADC 2     // store in a1
+       STORE
+       POP
+
+       JUMP _loop
+
+// copy result to SP[0] and cleanup
+_end:  LOADC 2     // result is in a1
+       LOAD
+
+       LOADC 0
+       STORE
+
+       POP
+       POP
+       POP
+       POP
+       POP

@@ -1,0 +1,6 @@
+code-r (b ? e1 : e2) p =     code-r b p
+                             JUMPZ _a
+                             code-r e1 p
+                             JUMP _b
+                         _a: code-r e1 p
+                         _b:

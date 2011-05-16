@@ -1,0 +1,25 @@
+// this code is the code-r of the expression
+// where rho is x -> 100, y -> 101, z -> 102
+// since there is no "EXP" instruction in cma
+// we just took x^2 as x*x
+LOADC 4
+LOADC 100
+LOAD
+LOADC 100
+LOAD
+MUL
+MUL
+LOADC 3
+LOADC 100
+LOAD
+MUL
+LOADC 1
+ADD
+ADD
+LOADC 101
+LOAD
+LOADC 26
+SUB
+DIV
+LOADC 102
+STORE
