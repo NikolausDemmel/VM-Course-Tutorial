@@ -1,0 +1,27 @@
+For adding break and continue we need to consider only the CODE function,
+since they are statements. CODE-R and CODE-L are for expressions and need not
+be touched. For CODE we add two more parameters, the labels lb and lc which
+mark the labels that a break and continue should jump to respectively.
+Statements that dont deal with break and continue simply pass the labels to
+their children statements unchanged. Statements such as FOR and WHILE need to
+pass their own correct labels to their children.
+
+code BREAK rho lb lc = JUMP lb
+
+code CONTINUE rho lb lc = JUMP lc
+
+code (WHILE e DO s) rho lb lc = A: code-r e rho
+                                   JUMPZ B
+                                   code s rho B A
+                                   JUMP A
+                                B: ...
+
+code (FOR (e1;e2;e3) s) rho lb lc =    code-r e1 rho
+                                       POP
+                                    A: code-r e2 rho
+                                       JUMPZ B
+                                       code s rho B C
+                                    C: code-r e3 rho
+                                       POP
+                                       JUMP A
+                                    B: ...
