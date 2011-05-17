@@ -1,0 +1,4 @@
+code (DO s WHILE e) rho = A: code s rho
+                             code-r e rho
+                             NOT
+                             JUMPZ A
