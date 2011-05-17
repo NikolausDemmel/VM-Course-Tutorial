@@ -1,0 +1,13 @@
+// code-r for "x = ((y = (y+4))*z)"
+// rho = x -> 4, y -> 5, z -> 6
+LOADC 5
+LOAD
+LOADC 4
+ADD
+LOADC 5
+STORE
+LOADC 6
+LOAD
+MUL
+LOADC 4
+STORE

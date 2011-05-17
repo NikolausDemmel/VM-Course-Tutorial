@@ -44,3 +44,13 @@
 
 (defparameter *ex1.1-asm*
   (code-r *ex1.1-ast* '((x . 100) (y . 101) (z . 102))))
+
+;;; x = ((y = (y+4))*z)
+;;; rho = x -> 4, y -> 5, z -> 6
+(defparameter *ex2.4-ast*
+  '(:assign x (:mul (:assign y
+                             (:add y 4))
+                    z)))
+
+(defparameter *ex2.4-asm*
+  (code-r *ex2.4-ast* '((x . 4) (y . 5) (z . 6))))
