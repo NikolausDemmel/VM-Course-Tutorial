@@ -1,0 +1,38 @@
+Notes: Similar to exercise 1 we use this time one more argument to code,
+namelya label where brek shoudl jump to. Continue is not needed here and thus
+left out. Sigma(b) for a value between min(b) and max(b) that does not occur
+in the switch statement should of course be the number of the default case. If
+there is no default case it should just jump to D. The translation scheeme
+here is not very code-size efficient when min(b) and max(b) are very far
+apart. Sigma becomes the identity for the simple case.
+
+
+
+code s rho lb =      code-r e rho
+                     loadc min(b)
+                     SUB
+                     check (max(b)+1-min(b)) B
+                C0:  code ss0 rho D
+                C1:  code ss1 rho D
+                ...
+                Ck:  code ssk rho D
+                     JUMP D
+                B:   JUMP Ci [where i = sigma(min(b))]
+                     JUMP Ci [where i = sigma(min(b)+1)]
+                     ...
+                     JUMP Ci [where i = sigma(max(b))]
+                D:
+                  
+
+
+s = switch (e) {
+    case b11: ... case b1n:
+    [default:]
+      ss1
+
+    ...
+
+    case bk1: ... case bkm:
+    [default:]
+      ssk
+}
