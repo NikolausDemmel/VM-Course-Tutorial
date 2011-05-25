@@ -19,12 +19,19 @@
                               ,(op->asm op)))
               ((eql :assign) `(,@(code-r (second args) rho)
                                ,@(code-l (first args) rho)
-                               :store)))))
+                               :store))
+              ((eql :dot) `(,@(code-l expr rho)
+                            :load)))))
     (integer `((:loadc ,expr)))
     (c-variable `(,@(code-l expr rho) :load))))
 
 (defun code-l (expr rho)
   (typecase expr
+    (list (destructuring-bind (op . args) expr
+            (typecase op
+              ((eql :dot) `(,@(code-l (first args) rho)
+                            ,@(code-l (second args) rho)
+                            :add)))))
     (c-variable `((:loadc ,(lookup rho expr))))))
 
 (defun print-line (line)
@@ -54,3 +61,15 @@
 
 (defparameter *ex2.4-asm*
   (code-r *ex2.4-ast* '((x . 4) (y . 5) (z . 6))))
+
+;;; a.x.val + a.y
+;;; rho = { val -> 0, next -> 1, buffer -> 0, x -> 64, y -> 66, a -> 42 }
+(defparameter *ex3.1-ast*
+  '(:add (:dot (:dot a x) val)
+         (:dot a y)))
+
+(defparameter *ex3.1-rho*
+  '((val . 0) (next . 1) (buffer . 0) (x . 64) (y . 66) (a . 42)))
+
+(defparameter *ex3.1-asm*
+  (code-r *ex3.1-ast* *ex3.1-rho*))

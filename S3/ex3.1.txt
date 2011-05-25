@@ -1,0 +1,17 @@
+rho = { val -> 0, next -> 1, buffer -> 0, x -> 64, y -> 66, a -> 42 }
+
+sizeof(int_list) = 2
+sizeof(A) = 67
+
+// translation of "a.x.val + a.y"
+LOADC 42
+LOADC 64
+ADD
+LOADC 0
+ADD
+LOAD
+LOADC 42
+LOADC 66
+ADD
+LOAD
+ADD
