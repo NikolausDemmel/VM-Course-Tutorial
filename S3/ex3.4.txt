@@ -1,16 +1,14 @@
-These four can not be macro instructions:
+These fife can not be macro instructions:
 
 MARK (can't access FP/EP)
 CALL (can't access FP/PC)
 ENTER (can't set EP)
 RETURN (can't set FP,EP)
+SLINE n (we can't save S[SP] to S[SP-n] and then do n POP instructions, since
+         we don't know the address SP-n)
 
-These two can be:
+Alloc can be:
 
 ALLOC n = LOADC 0
           ... n - times ...
           LOADC 0
-
-SLIDE n = POP
-          ... n - times ...
-          POP
