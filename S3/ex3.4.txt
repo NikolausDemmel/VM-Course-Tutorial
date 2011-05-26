@@ -1,0 +1,16 @@
+These four can not be macro instructions:
+
+MARK (can't access FP/EP)
+CALL (can't access FP/PC)
+ENTER (can't set EP)
+RETURN (can't set FP,EP)
+
+These two can be:
+
+ALLOC n = LOADC 0
+          ... n - times ...
+          LOADC 0
+
+SLIDE n = POP
+          ... n - times ...
+          POP
