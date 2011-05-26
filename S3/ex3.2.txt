@@ -1,0 +1,3 @@
+We need type information for expressions (which we get by the
+parser/type-checker) and then rho needs to map pairs of <type, identifier> to
+adresses (at least for identifiers that can appear inside structs).
