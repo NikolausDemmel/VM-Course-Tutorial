@@ -6,6 +6,7 @@ ENTER (can't set EP)
 RETURN (can't set FP,EP)
 SLINE n (we can't save S[SP] to S[SP-n] and then do n POP instructions, since
          we don't know the address SP-n)
+(note there is no SLIDE in the lecture translation scheme)
 
 Alloc can be:
 

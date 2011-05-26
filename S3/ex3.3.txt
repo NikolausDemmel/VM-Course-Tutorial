@@ -1,0 +1,49 @@
+// translation of this function call with empty rho
+// int f(int x, int y){
+//     return x*y+2;
+// }
+
+JUMP _main
+
+_f: ENTER 2 
+    ALLOC 0 
+    LOADR 1 
+    LOADR 2 
+    MUL     
+    LOADC 2 
+    ADD     
+    STORER -3
+    RETURN
+
+// translation of "f(8,5)"
+
+_main: MARK
+LOADC 8
+LOADC 5
+LOADC _f
+CALL 2
+
+// execution of above statement (note there is no SLIDE in the lecture translation scheme)
+
+    S = []
+MARK
+    S = [_,EPold,FPold,_]
+LOADC 8
+LOADC 5
+LOADC _f
+    S = [_,EPold,FPold,_,8,5,_f]
+CALL 2
+    S = [_,EPold,FPold,PCold,8,5,]
+ENTER 2
+    S = [_,EPold,FPold,PCold,8,5,]
+ALLOC 0
+    S = [_,EPold,FPold,PCold,8,5,]
+LOADR 1 
+LOADR 2 
+MUL     
+LOADC 2 
+ADD     
+STORER -3
+    S = [42,EPold,FPold,PCold,8,5,42]
+RETURN
+    S = [42]
