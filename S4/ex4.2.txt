@@ -1,0 +1,117 @@
+-*-Org-*-
+
+Notes on the translations scheme:
+
+The following table gives the translation scheme. Instructions with no
+arguments are encoded as a single 32 bit word. Instructions with one parameter
+are encoded as two 32 bit words with the second word representing the
+parameter. This way we ensure that we can always encode every possible
+parameter. This scheme is very wastful with space. For example it is very
+unlikely that we need a full 32 bit parameter for some instructions, e.g. MOVE
+or ENTER. Also since there is only very few instructions we could think about
+having multiple versions of the instructions with parameters, e.g. one that is
+used for relatively small arguments and thus can be encoded in just 1 word and
+for cases with very big arguments the 2 word version is used.
+
+For the translation in the following table the first 32-bit word always
+identifies the instruction. The upper 16 bit encode the number of paramteres
+to the instruction (currently only 0 or 1) and the lower 16 bit encode the
+actual instruction (instruction id). Note that the parameter number
+information is not strictly neccessary since the ids are unique. However this
+extra explicit information could possible make it easier to implement in
+hardware.
+
+In the second line of instructions with a parameter we of course put the 32
+bit encoding of the parameter. The only thing we have to look out for here
+maybe is whether to use signed or unsigned ints. But this depends very much on
+the intended semantics and the actual machine.
+
+|----------+--------------|
+| ADD      | 0x 0000 0001 |
+|----------+--------------|
+| JUMPI B  | 0x 0001 0002 |
+|          | B            |
+|----------+--------------|
+| ALLOC k  | 0x 0001 0003 |
+|          | k            |
+|----------+--------------|
+| JUMPZ A  | 0x 0001 0004 |
+|          | A            |
+|----------+--------------|
+| NEG      | 0x 0000 0005 |
+|----------+--------------|
+| AND      | 0x 0000 0006 |
+|----------+--------------|
+| LE       | 0x 0000 0007 |
+|----------+--------------|
+| NEQ      | 0x 0000 0008 |
+|----------+--------------|
+| CALL n   | 0x 0001 0009 |
+|          | n            |
+|----------+--------------|
+| LEQ      | 0x 0000 000A |
+|----------+--------------|
+| NEW      | 0x 0000 000B |
+|----------+--------------|
+| DIV      | 0x 0000 000C |
+|----------+--------------|
+| LOAD     | 0x 0000 000D |
+|----------+--------------|
+| NOT      | 0x 0000 000E |
+|----------+--------------|
+| DUP      | 0x 0000 000F |
+|----------+--------------|
+| LOADA q  | 0x 0001 0010 |
+|          | q            |
+|----------+--------------|
+| OR       | 0x 0000 0011 |
+|----------+--------------|
+| ENTER q  | 0x 0001 0012 |
+|          | q            |
+|----------+--------------|
+| LOADC q  | 0x 0001 0013 |
+|          | q            |
+|----------+--------------|
+| POP      | 0x 0000 0014 |
+|----------+--------------|
+| EQ       | 0x 0000 0015 |
+|----------+--------------|
+| LOADR j  | 0x 0001 0016 |
+|          | j            |
+|----------+--------------|
+| RETURN   | 0x 0000 0017 |
+|----------+--------------|
+| GE       | 0x 0000 0018 |
+|----------+--------------|
+| LOADRC j | 0x 0001 0019 |
+|          | j            |
+|----------+--------------|
+| STORE    | 0x 0000 001A |
+|----------+--------------|
+| GEQ      | 0x 0000 001B |
+|----------+--------------|
+| MARK     | 0x 0000 001C |
+|----------+--------------|
+| STOREA q | 0x 0001 001D |
+|          | q            |
+|----------+--------------|
+| GR       | 0x 0000 001E |
+|----------+--------------|
+| MOD      | 0x 0000 001F |
+|----------+--------------|
+| STORER j | 0x 0001 0020 |
+|          | j            |
+|----------+--------------|
+| HALT     | 0x 0000 0021 |
+|----------+--------------|
+| MOVE k   | 0x 0001 0022 |
+|          | k            |
+|----------+--------------|
+| SUB      | 0x 0000 0023 |
+|----------+--------------|
+| JUMP A   | 0x 0000 0024 |
+|          | A            |
+|----------+--------------|
+| XOR      | 0x 0000 0025 |
+|----------+--------------|
+
