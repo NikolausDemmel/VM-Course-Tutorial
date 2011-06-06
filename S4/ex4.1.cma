@@ -1,0 +1,124 @@
+// 0. Program:
+
+// struct polynomial {
+//     int *coeffs;
+//     int degree;
+// }
+//
+// int fCoeffs[] = { 1, 3, -4, 8, -12 };
+// struct polynomial f;
+// f.coeffs = fCoeffs;
+// f.degree = 4;
+//
+// int x, acc, i;
+//
+// x = 3;
+// acc = 0;
+// for (i = f.degree; i >= 0; --i)
+//     acc = acc * x + f.coeffs[i];
+
+
+
+// 1. A possible mapping rho is:
+
+// { coeffs -> 0,
+//  degree -> 1,
+//  fCoeffs -> 1,
+//  f -> 6,
+//  x -> 8,
+//  acc -> 9,
+//  i -> 10 }
+
+
+
+// 2. CMA code using rho from above (after execution result is in acc, should be -782)
+
+   LOADC 0      // padding to make the above rho work
+
+   LOADC 1      // fCoeffs
+   LOADC 3
+   LOADC -4
+   LOADC 8
+   LOADC -12
+
+   LOADC 0      // f
+   LOADC 0
+
+   LOADC 1      // f.coeffs = fCoeffs;
+   LOADC 6
+   LOADC 0
+   ADD
+   STORE
+   POP
+
+   LOADC 4      // f.degree = 4;
+   LOADC 6
+   LOADC 1
+   ADD
+   STORE
+   POP
+
+   LOADC 0      // x
+   LOADC 0      // acc
+   LOADC 0      // i
+
+   LOADC 3      // x = 3;
+   LOADC 8
+   STORE
+   POP
+
+   LOADC 0      // acc = 0;
+   LOADC 9
+   STORE
+   POP
+
+   // for (i = f.degree; i >= 0; --i)
+   //     acc = acc * x + f.coeffs[i];
+
+   LOADC 6      // i = f.degree
+   LOADC 1
+   ADD
+   LOAD
+   LOADC 10
+   STORE
+
+   POP
+
+A: LOADC 10     // i >= 0
+   LOAD
+   LOADC 0
+   GEQ
+
+   JUMPZ B
+   
+   LOADC 9      // acc = acc * x + f.coeffs[i];
+   LOAD
+   LOADC 8
+   LOAD
+   MUL
+   LOADC 6
+   LOADC 0
+   ADD
+   LOAD
+   LOADC 10
+   LOAD
+   LOADC 1
+   MUL
+   ADD
+   LOAD
+   ADD 
+   LOADC 9
+   STORE
+   POP
+
+   LOADC 10     // --i
+   LOAD
+   LOADC 1
+   SUB
+   LOADC 10
+   STORE
+   
+   POP
+   JUMP A
+
+B: HALT
