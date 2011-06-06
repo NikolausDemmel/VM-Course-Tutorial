@@ -1,0 +1,35 @@
+1. Definition of "glob"
+Notes: "U" -> set union, "\" -> set difference
+
+glob(b)                                = {}
+
+glob(x)                                = {x}
+
+glob(op e)                             = glob(e)
+
+glob(e1 op e2)                         = glob(e1) U glob(e2)
+
+glob(if e0 then e1 else e2)            = glob(e0) U glob(e1) U glob(e2)
+
+glob(e' e0 ... ek-1)                   = glob(e') U glob(e0) U ... U glob(ek-1)
+
+glob(fn x0 ... xk-1 => e)              = glob(e) \ {x0,...,xk-1}
+
+glob(let x1 = e1;...;xn = en in e0)    = (glob(e0)   \ {x1,...,xn}  ) U
+                                         (glob(en)   \ {x1,...,xn-1}) U
+                                         (glob(en-1) \ {x1,...,xn-2}) U
+                                         ...
+                                         (glob(e2)   \ {x1}         ) U
+                                          glob(e1)
+
+glob(letrec x1 = e1;...;xn = en in e0) = (glob(e0) U ... U glob(en)) \ {x1,...,xn}
+
+
+
+2. Expressions (a) - (d)
+Notes: This is not the same syntax as defined in the lecture...
+
+(a) {y}
+(b) {z}
+(c) {z,y}
+(d) {z,x,f,y}
