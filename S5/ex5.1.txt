@@ -1,0 +1,39 @@
+-*-Org-*-
+
+Compute "code-v e p 3" for the expression
+e  ==  if y > x then x else 7 + y * x
+y is the second formal parameter -> i = -1
+x is the first local variable    -> i = 1
+--> rho = { x -> (L,1), y -> (L,-1) }
+
+Assume CBN
+
+The table shows all the steps of the code generation and the final result with
+the stack distances.
+
+|------------+-------------------------+----------------+------------+------------+------------+-----------+----------------|
+| Initial    |                         |                |            |            |            |           | Result with sd |
+|------------+-------------------------+----------------+------------+------------+------------+-----------+----------------|
+| code-v e 3 | code-b (y>x) 3          | code-b y 3     | code-v y 3 | getvar y 3 | PUSHLOC 4  |           | 3    PUSHLOC 4 |
+|            |                         |                |            | EVAL       |            |           | 4    EVAL      |
+|            |                         |                | GETBASIC   |            |            |           | 4    GETBASIC  |
+|            |                         | code-b x 4     | code-v x 4 | getvar x 4 | PUSHLOC 3  |           | 4    PUSHLOC 3 |
+|            |                         |                |            | EVAL       |            |           | 5    EVAL      |
+|            |                         |                | GETBASIC   |            |            |           | 5    GETBASIC  |
+|            |                         | GE             |            |            |            |           | 5    GE        |
+|            | JUMPZ A                 |                |            |            |            |           | 4    JUMPZ A   |
+|            | code-v x 3              | getvar x 3     | PUSHLOC 2  |            |            |           | 3    PUSHLOC 2 |
+|            |                         | EVAL           |            |            |            |           | 4    EVAL      |
+|            | JUMP B                  |                |            |            |            |           | 4    JUMP B    |
+|            | A: code-v (7 + y * x) 3 | code-b 7 3     | LOADC 7    |            |            |           | 3 A: LOADC 7   |
+|            |                         | code-b (y*x) 4 | code-b y 4 | code-v y 4 | getvar y 4 | PUSHLOC 5 | 4    PUSHLOC 5 |
+|            |                         |                |            |            | EVAL       |           | 5    EVAL      |
+|            |                         |                |            | GETBASIC   |            |           | 5    GETBASIC  |
+|            |                         |                | code-b x 5 | code-v x 5 | getvar x 5 | PUSHLOC 4 | 5    PUSHLOC 4 |
+|            |                         |                |            |            | EVAL       |           | 6    EVAL      |
+|            |                         |                |            | GETBASIC   |            |           | 6    GETBASIC  |
+|            |                         |                | MUL        |            |            |           | 6    MUL       |
+|            |                         | ADD            |            |            |            |           | 5    ADD       |
+|            |                         | MKBASIC        |            |            |            |           | 4    MKBASIC   |
+|            | B:                      |                |            |            |            |           | 4 B:           |
+|------------+-------------------------+----------------+------------+------------+------------+-----------+----------------|
