@@ -1,0 +1,5 @@
+let f = fn x, y => (let x = 7 in 1 + 2) in
+  f 42 66
+
+For the given configuration we are in the execution of f just before
+evaluating the ADD operator.
