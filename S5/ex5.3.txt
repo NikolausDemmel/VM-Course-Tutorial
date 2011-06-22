@@ -1,0 +1,129 @@
+-*-Org-*-
+
+rho = {}
+sd = 0
+
+Calculate code-v e p sd for the following 3 expressions.
+
+Assume CBV
+
+1) 
+
+let a = 4
+in let f = fn x y -> x * y + a
+   in f 2 3
+
+| sd | label | instruction | comment       |
+|----+-------+-------------+---------------|
+|  0 |       | LOADC 4     | let a = 4     |
+|  1 |       | MKBASIC     |               |
+|  1 |       | PUSHLOC 0   | let f = fn .. |
+|  2 |       | MKVEC 1     |               |
+|  2 |       | MKFUNVAL A  |               |
+|  2 |       | JUMP B      |               |
+|  0 | A:    | TARG 2      | x * y + a     |
+|  0 |       | PUSHLOC 0   | x             |
+|  1 |       | GETBASIC    |               |
+|  1 |       | PUSHLOC 2   | y             |
+|  2 |       | GETBASIC    |               |
+|  2 |       | MUL         |               |
+|  1 |       | PUSHGLOB 0  | a             |
+|  2 |       | GETBASIC    |               |
+|  2 |       | ADD         |               |
+|  1 |       | MKBASIC     |               |
+|  1 |       | RETURN 2    |               |
+|  2 | B:    | MARK C      | f 2 3         |
+|  5 |       | LOADC 3     |               |
+|  6 |       | MKBASIC     |               |
+|  6 |       | LOADC 2     |               |
+|  7 |       | MKBASIC     |               |
+|  7 |       | PUSHLOC 5   |               |
+|  8 |       | APPLY       |               |
+|  3 | C:    | SLIDE 1     | end let       |
+|  2 |       | SLIDE 1     | end let       |
+|  1 |       |             |               |
+
+2)
+
+let a = 50
+in let f = fn x y -> x * y + a
+   in let g = f 10
+      in g 20 
+
+| sd | label | instruction | comment       |
+|----+-------+-------------+---------------|
+|  0 |       | LOADC 50    | let a = 50    |
+|  1 |       | MKBASIC     |               |
+|  1 |       | PUSHLOC 0   | let f = fn .. |
+|  2 |       | MKVEC 1     |               |
+|  2 |       | MKFUNVAL A  |               |
+|  2 |       | JUMP B      |               |
+|  0 | A:    | TARG 2      | x * y + a     |
+|  0 |       | PUSHLOC 0   |               |
+|  1 |       | GETBASIC    |               |
+|  1 |       | PUSHLOC 2   |               |
+|  2 |       | GETBASIC    |               |
+|  2 |       | MUL         |               |
+|  1 |       | PUSHGLOB 0  |               |
+|  2 |       | GETBASIC    |               |
+|  2 |       | ADD         |               |
+|  1 |       | MKBASIC     |               |
+|  1 |       | RETURN 2    |               |
+|  2 | B:    | MARK C      | let g = f 10  |
+|  5 |       | LOADC 10    |               |
+|  6 |       | MKBASIC     |               |
+|  6 |       | PUSHLOC 4   | f             |
+|  7 |       | APPLY       |               |
+|  3 | C:    | MARK D      | g 20          |
+|  6 |       | LOADC 20    |               |
+|  7 |       | MKBASIC     |               |
+|  7 |       | PUSHLOC 4   | g             |
+|  8 |       | APPLY       |               |
+|  4 | D:    | SLIDE 1     |               |
+|  3 |       | SLIDE 1     |               |
+|  2 |       | SLIDE 1     |               |
+|  1 |       |             |               |
+
+
+
+3)
+
+let a = 50
+in let f = fn x -> (fn y -> x * y + a) 
+   in f 10 20
+
+| sd | label | instruction | comment       |
+|----+-------+-------------+---------------|
+|  0 |       | LOADC 50    | let a = 50    |
+|  1 |       | MKBASIC     |               |
+|  1 |       | PUSHLOC 0   | let f = fn .. |
+|  2 |       | MKVEC 1     |               |
+|  2 |       | MKFUNVAL A  |               |
+|  2 |       | JUMP B      |               |
+|  0 | A:    | TARG 1      |               |
+|  0 |       | PUSHLOC 0   | fn y -> ..    |
+|  1 |       | PUSHGLOB 0  | a             |
+|  2 |       | MKVEC 2     |               |
+|  1 |       | MKFUNVAL C  |               |
+|  1 |       | JUMP D      |               |
+|  0 | C:    | TARG 1      |               |
+|  0 |       | PUSHGLOB 0  | x             |
+|  1 |       | GETBASIC    |               |
+|  1 |       | PUSHLOC 1   | y             |
+|  2 |       | GETBASIC    |               |
+|  2 |       | MUL         |               |
+|  1 |       | PUSHGLOB 1  | a             |
+|  2 |       | GETBASIC    |               |
+|  2 |       | ADD         |               |
+|  1 |       | RETURN 1    |               |
+|  1 | D:    | RETURN 1    |               |
+|  2 | B:    | MARK E      |               |
+|  2 |       | LOADC 20    | 20            |
+|  3 |       | MKBASIC     |               |
+|  3 |       | LOADC 10    | 10            |
+|  4 |       | MKBASIC     |               |
+|  4 |       | PUSHLOC 2   | f             |
+|  5 |       | APPLY       |               |
+|  3 | E:    | SLIDE 1     |               |
+|  2 |       | SLIDE 1     |               |
+|  1 |       |             |               |
