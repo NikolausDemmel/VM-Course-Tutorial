@@ -1,0 +1,73 @@
+-*-Org-*-
+
+1. Its CBV since there are no EVAL instructions
+
+2. See code below
+
+3. The program computes the ggt of 4 and 6, namely 2. It looked something
+   likes this:
+
+letrec f = fn x y -> 
+             (if x > y 
+                then f y (x - y)
+                else (if x < y
+                        then f x (y - x)
+                        else x))
+in f 4 6
+
+| sd | label | instruction | comment                      |
+|----+-------+-------------+------------------------------|
+|  0 |       | ALLOC 1     | letrec f = fn x y -> ..      |
+|  1 |       | PUSHLOC 0   | 1 global -> f itself         |
+|  2 |       | MKVEC 1     |                              |
+|  2 |       | MKFUNVAL _0 |                              |
+|  2 |       | JUMP _1     |                              |
+|  0 | _0:   | TARG 2      | 2 param x, y                 |
+|  0 |       | PUSHLOC 0   | i = 0 -> x                   |
+|  1 |       | GETBASIC    |                              |
+|  1 |       | PUSHLOC 2   | i = -1 -> y                  |
+|  2 |       | GETBASIC    |                              |
+|  2 |       | GR          |                              |
+|  1 |       | JUMPZ _2    | if x > y                     |
+|  0 |       | MARK _4     | then funcall                 |
+|  3 |       | PUSHLOC 3   | i = 0 -> x                   |
+|  4 |       | GETBASIC    |                              |
+|  4 |       | PUSHLOC 5   | i = -1 -> y                  |
+|  5 |       | GETBASIC    |                              |
+|  5 |       | SUB         |                              |
+|  4 |       | MKBASIC     |                              |
+|  4 |       | PUSHLOC 5   | i= -1 -> y                   |
+|  5 |       | PUSHGLOB 0  | f                            |
+|  6 |       | APPLY       | call f y (x - y)             |
+|  1 | _4:   | JUMP _3     | goto endif                   |
+|  0 | _2:   | PUSHLOC 0   | else x                       |
+|  1 |       | GETBASIC    |                              |
+|  1 |       | PUSHLOC 2   | y                            |
+|  2 |       | GETBASIC    |                              |
+|  2 |       | LE          |                              |
+|  1 |       | JUMPZ _5    | if x < y                     |
+|  0 |       | MARK _7     | then funcall                 |
+|  3 |       | PUSHLOC 4   | y                            |
+|  4 |       | GETBASIC    |                              |
+|  4 |       | PUSHLOC 4   | x                            |
+|  5 |       | GETBASIC    |                              |
+|  5 |       | SUB         | y - x                        |
+|  4 |       | MKBASIC     |                              |
+|  4 |       | PUSHLOC 4   | x                            |
+|  5 |       | PUSHGLOB 0  | f                            |
+|  6 |       | APPLY       | funcall f x (y - x)          |
+|  1 | _7:   | JUMP _6     |                              |
+|  0 | _5:   | PUSHLOC 0   | else return x                |
+|  1 | _6:   |             |                              |
+|  1 | _3:   | RETURN 2    | endif / end fundef           |
+|  2 | _1:   | REWRITE 1   |                              |
+|  1 |       | MARK _8     | calling f 4 6                |
+|  4 |       | LOADC 6     |                              |
+|  5 |       | MAKBASIC    |                              |
+|  5 |       | LOADC 4     |                              |
+|  6 |       | MKBASIC     |                              |
+|  6 |       | PUSHLOC 5   |                              |
+|  7 |       | APPLY       |                              |
+|  2 | _8:   | SLIDE 1     |                              |
+|  1 |       | HALT        | f 4 6 should be on the stack |
+
