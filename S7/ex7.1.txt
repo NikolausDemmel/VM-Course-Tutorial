@@ -1,0 +1,18 @@
+Determine the last-calls of an expression e.
+
+e = b | x | (op e1) | (e1 op e2) |
+    (if e0 then e1 else e2) |
+    (e' e0 ... ek-1) |
+    (fn x0, ..., xk-1 => e') |
+    (let x1 = e1; ...; xn = en in e0)
+    (letrec x1 = e1; ...; xn = en in e0)
+
+last-calls b = {}
+last-calls x = {}
+last-calls (op e1) = {}
+last-calls (e1 op e2) = {}
+last-calls (if e0 then e1 else e2) = (last-calls e1) U (last-calls e2)
+last-calls (e' e0 ... ek-1) = { (e' e0 ... ek-1) }
+last-calls (fn x0, ..., xk-1 => e') = {}
+last-calls (let x1 = e1; ...; xn = en in e0) = last-calls e0
+last-calls (letrec x1 = e1; ...; xn = en in e0) = last-calls e0

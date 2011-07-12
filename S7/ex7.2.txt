@@ -1,0 +1,118 @@
+-*-Org-*-
+
+e = b | x | (op e1) | (e1 op e2) |
+    (if e0 then e1 else e2) |
+    (e' e0 ... ek-1) |
+    (fn x0, ..., xk-1 => e') |
+    (let x1 = e1; ...; xn = en in e0)
+    (letrec x1 = e1; ...; xn = en in e0)
+
+####################
+## Set operations ##
+####################
+
+U = union
+I = intersection
+\ = difference
+
+###########################
+## 1. Definition of A[e] ##
+###########################
+
+Assume the standard schema for translating closures, without optimizations.
+
+A[b] = {}
+A[x] = {x}
+A[op e1] = A[e1]
+A[e1 op e2] = A[e1] U A[e2]
+A[if e0 then e1 else e2] = A[e0] U (A[e1] I A[e2])
+A[e' e0 ... ek-1] = A[e']
+A[fn x0, ..., xk-1 => e'] = (free (fn x0, ..., xk-1 => e'))
+A[let x1 = e1; ...; xn = en in e0] = A[e0] \ {x1, ..., xn}
+A[letrec x1 = e1; ...; xn = en in e0] = A[e0] \ {x1, ..., xn}
+
+#################################
+## 2. Modified code generation ##
+#################################
+
+| PARAMTERS                                          | TRANSLATION                    | CONDITION / COMMENT                           |
+|----------------------------------------------------+--------------------------------+-----------------------------------------------|
+| code-b b p sd A                                    | LOADC b                        |                                               |
+| code-b (op e) p sd A                               | code-b e p sd A                |                                               |
+|                                                    | OP                             |                                               |
+| code-b (e1 op e2) p sd A                           | code-b e1 p sd A               |                                               |
+|                                                    | code-b e2 p (sd+1) (A U A[e1]) |                                               |
+|                                                    | OP                             |                                               |
+| code-b (if e0 then e1 else e2) p sd A              | code-b e0 p sd A               |                                               |
+|                                                    | JUMPZ _A                       |                                               |
+|                                                    | code-b e1 p sd (A U A[e0])     |                                               |
+|                                                    | jump B                         |                                               |
+|                                                    | _A: code-b e2 p sd (A U A[e0]) |                                               |
+|                                                    | B:                             |                                               |
+| code-b e p sd A                                    | code-v e p sd                  | all other cases                               |
+|                                                    | GETBASIC                       |                                               |
+|----------------------------------------------------+--------------------------------+-----------------------------------------------|
+| code-v b p sd A                                    | LOADC b                        |                                               |
+|                                                    | MKBASIC                        |                                               |
+| code-v (op e) p sd A                               | code-b e p sd A                |                                               |
+|                                                    | OP                             |                                               |
+|                                                    | MKBASIC                        |                                               |
+| code-v (e1 op e2) p sd A                           | code-b e1 p sd A               |                                               |
+|                                                    | code-b e2 p (sd+1) (A U A[e1]) |                                               |
+|                                                    | OP                             |                                               |
+|                                                    | MKBASIC                        |                                               |
+| code-v (if e0 then e1 else e2) p sd A              | code-b e0 p sd A               |                                               |
+|                                                    | JUMPZ _A                       |                                               |
+|                                                    | code-v e1 p sd (A U A[e0])     |                                               |
+|                                                    | JUMP B                         |                                               |
+|                                                    | _A: code-v e2 p sd (A U A[e0]) |                                               |
+|                                                    | B:                             |                                               |
+| code-v x p sd A                                    | getvar x p sd                  | if x in A                                     |
+| code-v x p sd A                                    | getvar x p sd                  | if x not in A                                 |
+|                                                    | EVAL                           |                                               |
+| code-v (let y1 = e1; ...; yn = en in e0) p sd A    | code-c e1 p sd A               | pi like in original                           |
+|                                                    | code-c e2 p1 (sd+1) A          |                                               |
+|                                                    | ...                            |                                               |
+|                                                    | code-c en pn-1 (sd+n-1) A      |                                               |
+|                                                    | code-v e0 pn (sd+n) A          |                                               |
+|                                                    | SLIDE n                        |                                               |
+| code-v (fn x0, ..., xk-1 => e) p sd A              | getvar z0 p sd                 |                                               |
+|                                                    | getvar z1 p (sd+1)             |                                               |
+|                                                    | ...                            |                                               |
+|                                                    | getvar zg-1 p (sd+g-1)         |                                               |
+|                                                    | MKVEC g                        |                                               |
+|                                                    | MKFUNVAL _A                    |                                               |
+|                                                    | JUMPB                          |                                               |
+|                                                    | _A: TARG k                     | p' like in original                           |
+|                                                    | code-v e p' 0 A                | I guess one could pass (A I free(e)) instead, |
+|                                                    |                                | but it does not make a difference             |
+|                                                    | RETURN k                       |                                               |
+|                                                    | B: ...                         |                                               |
+| code-v (e' e0 ... em-1) p A                        | MARK _A                        |                                               |
+|                                                    | code-c em-1 p (sd+3) A         |                                               |
+|                                                    | code-c em-2 p (sd+4) A         |                                               |
+|                                                    | ...                            |                                               |
+|                                                    | code-c e0 p (sd+m+2) A         |                                               |
+|                                                    | code-v e' p (sd+m+3) A         |                                               |
+|                                                    | APPLY                          |                                               |
+|                                                    | _A: ...                        |                                               |
+| code-v (letrec y1 = e1; ...; yn = en in e0) p sd A | ALLOC n                        |                                               |
+|                                                    | code-c e1 p' (sd+n) A          | p' like in original                           |
+|                                                    | REWRITE n                      |                                               |
+|                                                    | ...                            |                                               |
+|                                                    | code-c en p' (sd+n) A          |                                               |
+|                                                    | REWRITE 1                      |                                               |
+|                                                    | code-v e0 p' (sd+n) A          |                                               |
+|                                                    | SLIDE N                        |                                               |
+|----------------------------------------------------+--------------------------------+-----------------------------------------------|
+| code-c e p sd A                                    | getvar z0 p sd                 |                                               |
+|                                                    | getvar z1 p (sd + 1)           |                                               |
+|                                                    | ...                            |                                               |
+|                                                    | getvar zg-1 p (sd + g - 1)     |                                               |
+|                                                    | MKVEC g                        |                                               |
+|                                                    | MKCLOS _A                      |                                               |
+|                                                    | JUMP B                         |                                               |
+|                                                    | _A: code-v e p' 0 A            | p' like in original                           |
+|                                                    |                                | again passing (A I free(e)) would be possible |
+|----------------------------------------------------+--------------------------------+-----------------------------------------------|
+

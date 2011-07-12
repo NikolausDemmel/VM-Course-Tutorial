@@ -1,0 +1,51 @@
+-*-Org-*-
+
+##################
+## Heap objects ##
+##################
+
+[ T | Leaf ]
+[ T | Node | s[0] | s[1] | s[2] ]
+             info   left   right
+
+###########################
+## New Mama-instractions ##
+###########################
+
+| MaMa INSTRUCTION | IMPLEMENTATION                                  |
+|------------------+-------------------------------------------------|
+| LEAF             | SP++;                                           |
+|                  | S[SP] = new (T, Leaf);                          |
+| NODE             | S[SP-2] new (T, Node, S[SP-2], S[SP-1], S[SP]); |
+|                  | SP = SP-2;                                      |
+| TTREE A          | h = S[SP]                                       |
+|                  | if (H[h] != (T,...)                             |
+|                  | Error "no tree!";                               |
+|                  | if (H[h] == (T,Leaf)) SP--;                     |
+|                  | else {                                          |
+|                  | S[SP+2] = S[SP]->s[2];                          |
+|                  | S[SP+1] = S[SP]->s[1];                          |
+|                  | S[SP] = S[SP]->s[0];                            |
+|                  | SP=SP+2; PC = A;                                |
+|                  | }                                               |
+
+
+
+code-v Leaf p sd = LEAF
+code-v (Node e0 e1 e2) p sd = code-c e0 p sd
+                              code-c e1 p (sd+1)
+                              code-c e2 p (sd+2)
+                              Node
+
+
+Let now e = match e0 with Leaf -> e1 | Node(info, left, right) -> e2
+
+code-v e p sd = code-v e0 p sd
+                TTREE A
+                code-v e1 p sd
+                JUMP B
+                A: code-v e2 p' (sd+3)
+                SLIDE 3
+                B: ...
+
+where p' = p + {info -> (L,sd+1), left -> (L, sd+2), right -> (L, sd+3)}
