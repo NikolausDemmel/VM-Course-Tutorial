@@ -1,0 +1,106 @@
+-*-Org-*-
+
+We dont need to handle the type declarations, since this is used by the parser
+and type checker, which we are not interested in. We assume programs we get
+are well typed.
+
+##################
+## Heap objects ##
+##################
+
+New datatype heap object
+
+[ D | Type | Constructor | l | s[0] | ... | s[l-1] ]
+
+where 
+- Type denotes the type of the object
+- Constructior is a constructor of that type
+- l is the arity of that constructor (>= 0)
+
+Note that Types and Constructors can be represented by numbers. Types can be
+just 0 ... m-1 for m types and constructors for type k can be 0 ... nk-1 where
+nk is the number of constructors of type k. For constructor C the arity is
+represented by lC.
+
+###########################
+## New Mama-instractions ##
+###########################
+
+| MaMa INSTRUCTION | IMPLEMENTATION                                             | COMMENT         |
+|------------------+------------------------------------------------------------+-----------------|
+| NEW C            | S[SP-l+1] = new (D, T, C, S[SP-l+1], S[SP-l+2], ... S[SP]) | T is type of C  |
+|                  | SP = SP - l + 1                                            | l is arity of C |
+|                  |                                                            |                 |
+| TEST T A         | h = S[SP]                                                  |                 |
+|                  | if (H[h] != (D,T,...)) Error "wrong type";                 |                 |
+|                  | (_,_,c,l,...) = H[h];                                      |                 |
+|                  | for(i=l-1;l>=0;i--) {                                      |                 |
+|                  | S[SP+i] = S[SP]->s[i];                                     |                 |
+|                  | }                                                          |                 |
+|                  | SP=SP+l-1;                                                 |                 |
+|                  | PC = (A+c);                                                |                 |
+
+
+#################
+## Translation ##
+#################
+
+## Constructor C with arity l
+
+code-v (C e0 e1 ... el-1) = 
+    code-c e0 p sd
+    code-c e1 p (sd+1)
+    ...
+    code-c el-1 p (sd+l-1)
+    NEW C
+
+
+## Pattern matching
+
+One thing to realize is that the general pattern matching defined in this
+exercise can be translated at compile time into a simple form ot pattern
+matching with
+
+- no nested pattern
+- one case for each constructor (match is exhaustive)
+- no overlapping cases (in particular every pattern is a constructor pattern, variables only inside the constructor)
+
+This can be acheived for example with transforming a general match statement
+into nested simple match statements and if expressions. (See: "The
+Implementation of Functional Programming Languages" by Simon Peyton Jones,
+published by Prentice Hall, 1987.)
+
+We only define the translation of simple pattern matchings into machine code
+and leave out the translation of general to simple pattern matching.
+
+Let e = match e' with
+          | C1 x11 ... x1l1 -> e1
+          | C2 x21 ... x2l2 -> e2
+          ...
+          | Cn xn1 ... xnln -> en
+
+Here e' is of type T, C1 ... Cn are the n constructors of T with arities l1 ... ln.
+
+code-v e p sd = 
+        code-v e' p sd
+        test T A
+    A:  JUMP B1
+        JUMP B2
+        ...
+        JUMP Bn
+    B1: code-v e1 p1 (sd+l1)
+        SLIDE l1
+        JUMP D
+    B2: code-v e2 p2 (sd+l2)
+        SLIDE l2
+        JUMP D
+    ...
+    Bn-1: code-v en-1 pn-1 (sd+ln-1)
+        SLIDE ln-1
+        JUMP D
+    Bn: code-v en pn (sd+ln)
+        SLIDE ln-1
+    D:  ...
+
+where pi = p + {xi1 -> (L,sd+1), xi2 -> (L,sd+2), ..., xili -> (L,sd+li)}
+except for those xij that are "_". Those are simply not included in pi.
