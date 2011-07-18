@@ -1,0 +1,56 @@
+X bar = X' = initialized variable
+
+p = {X->1, Y->2, Z->3}
+
+### Part a)
+
+ta = f(X, g(b,Y), g(X',Z'))
+
+code-A ta p =
+    putvar 1
+    putatom b
+    putvar 2
+    putstruct g/2
+    putref 1
+    putref 3
+    putstruct g/2
+    putstruct f/3
+
+code-G ta p =
+    mark B
+    putvar 1
+    putatom b
+    putvar 2
+    putstruct g/2
+    putref 1
+    putref 3
+    putstruct g/2
+    call f/3
+ B: ...
+
+
+### Part b)
+
+tb = p(f(g(X,h(Y', _), b), Z))
+
+code-A tb p =
+    putvar 1
+    putref 2
+    putanon
+    putstruct g/2
+    putatom b
+    putstruct f/3
+    putvar 3
+    putstruct p/2
+
+code-G tb p =
+    mark B
+    putvar 1
+    putref 2
+    putanon
+    putstruct g/2
+    putatom b
+    putstruct f/3
+    putvar 3
+    call p/2
+ B: ...
