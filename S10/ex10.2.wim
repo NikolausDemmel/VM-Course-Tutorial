@@ -1,0 +1,34 @@
+// ### a) 
+
+// Chains build up, when initialized but unbound variables occur and are bound to
+// each other. Ther order matters, as the references with higher heap adress are
+// bound to adresses with lower heap address. The following minimalistic example
+// program with its translation (runs in VAM) builds up a chain of length 3.
+
+// p() :- X = X, Y = Y, Z = Z, Y = Z, Y = X, X = a.
+// ?- p()
+
+      init A    
+      pushenv 0
+      mark B
+      call p/0
+A:    no
+B:    halt 0
+p/0:  pushenv 3
+      putvar 1
+      uref 1
+      putvar 2
+      uref 2
+      putvar 3
+      uref 3
+      putref 2
+      uref 3
+      putref 2
+      uref 1
+      putref 1
+      uatom a
+      popenv
+
+// ### b)
+
+// As the example shows, the chains can get arbitrarily long.
