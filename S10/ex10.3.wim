@@ -1,0 +1,104 @@
+// This file can be loaded and run with VAM
+//
+// PROGRAM:
+// reverse(L1, R, L2) :- L1 = [], L2 = R.
+// reverse(L1, R, A) :- L1 = [X|L], reverse(L, [X|R], A).
+// reverse(L,R) :- reverse(L, [], R).
+// ?- reverse(X, [d,b,a]).
+
+// TRANSLATION:
+
+           init A
+           pushenv 1
+           mark B
+           putvar 1
+           putatom d   // use letters instead of numbers
+           putatom b   // because number are shown as references
+           putatom a   // into the stack in VAM -> annoying
+           putatom []
+           putstruct [|]/2
+           putstruct [|]/2
+           putstruct [|]/2
+           call reverse/2
+B:         halt 1
+A:         no
+reverse/3: setbtp
+           try A1
+           delbtp
+           jump A2
+A1:        pushenv 3
+           putref 1
+           uatom []
+           putref 3
+           uref 2
+           popenv
+A2:        pushenv 5
+           putref 1
+           ustruct [|]/2 D
+           son 1
+           uvar 4
+           son 2
+           uvar 5
+           up E
+D:         putvar 4
+           putvar 5
+           putstruct [|]/2
+           bind
+E:         mark F
+           putref 5
+           putref 4
+           putref 2
+           putstruct [|]/2
+           putref 3
+           call reverse/3
+F:         popenv
+reverse/2: pushenv 2
+           mark C
+           putref 1
+           putatom []
+           putref 2
+           call reverse/3
+C:         popenv
+
+// EXECUTION
+
+// The following shows the goals that are called during the execution.  FAIL
+// indicates unification failure and subsequent predicate failure. Backtracking
+// is triggered there and computation continues from the last choice point, which
+// in our case is the next clause of the failed predicate. TRY x mark these
+// choice points. This indicats that the xth clause of a predicate is tried. The
+// goals are labeld with number 1x, 2y, etc. The letters x y indicate the version
+// of goal after certain number of backtracks.
+
+// Heap and stack can be seen in VAM. This is really nasty and messy and so I
+// don't want to draw the ~15 stacks/heaps for all the goals below by hand, sorry
+
+
+// 1a) reverse(X, [4,2,1])     
+//     2a) reverse(X, [], [4,2,1]) 
+//         3a) X = [] -> SUCCEED 
+//         4a) [4,2,1] = [] -> FAIL  
+//     2a) FAIL  
+//     2b) TRY 2                 
+//         3b) X = [X1|L1] -> SUCCEED 
+//         4b) reverse(L1,[X1],[4,2,1])
+//             5b) L1 = [] -> SUCCEED             
+//             6b) [X1] = [4,3,1] -> FAIL
+//         4b) FAIL
+//         4c) TRY 2                        
+//             5c) L1 = [X2|L2] -> SUCCEED                
+//             6c) reverse(L2, [X2,X1], [4,2,1])
+//                 7c) L2 = [] -> SUCCEED                     
+//                 8c) [X2,X1] = [4,2,1] -> FAIL
+//             6c) FAIL  
+//             6d) TRY 2                            
+//                 7d)  L2 = [X3|L3] -> SUCCEED                    
+//                 8d) reverse(L3, [X3,X2,X1], [4,2,1]) 
+//                     9d)  L3 = [] -> SUCCEED                         
+//                     10d) [X3,X2,X1] = [4,2,1] -> SUCCEED
+//                 8d) SUCCEED
+//             6d) SUCCEED
+//         4c) SUCCEED
+//     2b) SUCCEED
+// 1a) SUCCEED
+       

@@ -1,0 +1,36 @@
+### a)
+
+f(X,g(Y,b)) and f(g(a,Z),X)
+
+MGU = [X/g(a,b), Y/a, Z/b]
+
+### b)
+
+f(g(a,Z),X) and f(X,g(b,Y))
+
+does not unify, since X gets bound to g(a,Z) and then fails to unify with g(b,Y)
+
+### c)
+
+g(X,f(X,X)) and g(f(a,a),f(Y,Y))
+
+MGU = [Y/X,X/f(a,a)]
+
+### d)
+
+g(g(X,g(a,Z)),g(f(V),V)) and g(g(f(Y),Y),g(Z,g(Y,Z)))
+
+does not unify, since V would be bound to g(Y,Z) and Z would be bound to f(V) -> cycle
+
+### e)
+
+a(b,X,d(e,Y,g(h,i,Z))) and a(U,c,d(V,f,g(W,i,j)))
+
+MGU = [U/b,X/c,V/e,Y/f,W/h,Z/j]
+
+### f)
+
+f(X,5,Y,x(a,g(6,7))) and f(Y,5,c,x(Z,g(6,X)))
+
+does not unify, since X/c and X/7 are conflicting.
+
