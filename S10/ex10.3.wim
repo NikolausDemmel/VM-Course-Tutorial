@@ -71,8 +71,11 @@ C:         popenv
 // of goal after certain number of backtracks.
 
 // Heap and stack can be seen in VAM. This is really nasty and messy and so I
-// don't want to draw the ~15 stacks/heaps for all the goals below by hand, sorry.
-// Maybe I will attach some screenshots of VAM.
+// don't want to draw the ~15 stacks/heaps for all the goals below by hand,
+// sorry.  I have attached some screenshot of VAM. The first number orders them
+// in the execution. The second number is names the goal that just succeeded when
+// they were taken. So e.g. "01 - 3a.png" is the screenshot of the execution just
+// after "X = []" succeeded (see below 3a).
 
 
 // 1a) reverse(X, [4,2,1])     
